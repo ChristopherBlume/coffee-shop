@@ -11,6 +11,7 @@ app = Flask(__name__)
 setup_db(app)
 CORS(app)
 
+
 '''
 @TODO uncomment the following line to initialize the datbase
 !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
@@ -28,6 +29,9 @@ CORS(app)
         or appropriate status code indicating reason for failure
 '''
 
+# @app.route("/drinks", methods=["GET"])
+# def get_drinks():
+
 
 '''
 @TODO implement endpoint
@@ -37,6 +41,10 @@ CORS(app)
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
+
+# @app.route("/drinks-detail", methods=["GET"])
+# def get_drinks_detail():
+
 
 
 '''
@@ -48,6 +56,10 @@ CORS(app)
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
         or appropriate status code indicating reason for failure
 '''
+
+# @app.route("/drinks", methods=["Post"])
+# @requires_auth('post:drinks')
+# def post_drink():
 
 
 '''
@@ -62,6 +74,10 @@ CORS(app)
         or appropriate status code indicating reason for failure
 '''
 
+# @app.route("/drinks/<id>", methods=["PATCH"])
+# def patch_drinks(drink_id):
+
+
 
 '''
 @TODO implement endpoint
@@ -73,6 +89,10 @@ CORS(app)
     returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
         or appropriate status code indicating reason for failure
 '''
+
+# @app.route("/drinks/<id>", methods=["DELETE"]):
+# def delete_drink(drink_id):
+
 
 
 ## Error Handling
@@ -97,14 +117,20 @@ def unprocessable(error):
                     }), 404
 
 '''
+# @app.errorhandler(400)
+# def bad_request(error):
 
 '''
 @TODO implement error handler for 404
     error handler should conform to general task above 
 '''
-
+# @app.errorhandler(404)
+# def not_found(error):
 
 '''
 @TODO implement error handler for AuthError
     error handler should conform to general task above 
 '''
+
+# @app.errorhandler(AuthError)
+# def auth_error(error):
