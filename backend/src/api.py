@@ -29,8 +29,18 @@ CORS(app)
         or appropriate status code indicating reason for failure
 '''
 
-# @app.route("/drinks", methods=["GET"])
-# def get_drinks():
+@app.route("/drinks", methods=["GET"])
+def get_drinks():
+    drinks = Drink.query.all()
+    drinks = [drink.short() for drink in drinks]
+
+    if not drinks:
+        abort(404)
+
+    return jsonify({
+        'success': True,
+        'drinks': drinks
+    })
 
 
 '''
@@ -42,9 +52,15 @@ CORS(app)
         or appropriate status code indicating reason for failure
 '''
 
-# @app.route("/drinks-detail", methods=["GET"])
-# def get_drinks_detail():
-
+@app.route("/drinks-detail", methods=["GET"])
+@requires_auth('get:drinks-detail')
+def get_drinks_detail(payload):
+    drinks = Drink.query.all()
+    drinks = [drink.long() for drink in drinks]   
+    return jsonify({
+        'success': True,
+        'drinks': drinks
+    })
 
 
 '''
