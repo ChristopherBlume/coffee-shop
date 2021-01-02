@@ -18,7 +18,7 @@ CORS(app)
 !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 '''
-# db_drop_and_create_all()
+db_drop_and_create_all()
 
 ## ROUTES
 '''
@@ -77,21 +77,15 @@ def get_drinks_detail(payload):
 @app.route("/drinks", methods=["Post"])
 @requires_auth('post:drinks')
 def post_drink(payload):
-    body = request.get_json()
-    if not body:
-        abort(400)
-    drink = Drink(title = body.get('title'), recipe = body.get('recipe'))
-    try:
-        drink.insert()
+    if request.data:
+        new_drink_data = json.loads(request.data.decode('utf-8'))
+        new_drink = Drink(title=new_drink_data['title'], recipe=json.dumps(new_drink_data['recipe']))
+        Drink.insert(new_drink)
+
         return jsonify({
-            'sucess': True,
-            'drink': drink.long()
-        }), 200
-    except:
-        return json.dumps({
-            'success': False,
-            'error': 'An Error occurred'
-        }), 500
+            "success": True,
+            "drink": [new_drink.id]
+        })
 
 
 '''
@@ -108,8 +102,8 @@ def post_drink(payload):
 
 @app.route("/drinks/<id>", methods=["PATCH"])
 @requires_auth('patch:drinks')
-def patch_drinks(drink_id):
-    drink = Drink.query.filter(Drink.id == drink_id).one_or_none()
+def patch_drinks(payload, drink_id):
+    drink = Drink.query.filter(id == drink_id).one_or_none()
     if not drink_id:
         abort(404)
     try:
