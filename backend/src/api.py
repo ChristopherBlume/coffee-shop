@@ -100,28 +100,28 @@ def post_drink(payload):
         or appropriate status code indicating reason for failure
 '''
 
-@app.route("/drinks/<id>", methods=["PATCH"])
+@app.route("/drinks/<drink_id>", methods=["PATCH"])
 @requires_auth('patch:drinks')
 def patch_drinks(payload, drink_id):
-    drink = Drink.query.filter(id == drink_id).one_or_none()
-    if not drink_id:
-        abort(404)
-    try:
-        body = request.get_json()
-        if 'title' in body:
-            drink.title = body['title']
-        if 'recipe' in body:
-            drink.recipe = body['recipe']
-        
+    if request.data:
+        new_drink_data = json.loads(request.data.decode('utf-8'))
+        drink = Drink.query.filter_by(id=drink_id).one_or_none()
+        if drink is None:
+            abort(404)
+        if not ('title' in new_drink_data):
+            abort(400)
+        if 'title' in new_drink_data:
+            setattr(drink, 'title', new_drink_data['title'])
+        if 'recipe' in new_drink_data:
+            setattr(drink, 'recipe', new_drink_data['recipe'])
         drink.update()
-
+        updated_drink = Drink.query.filter_by(id=drink_id).first()
         return jsonify({
             'success': True,
-            'drinks': drink.long()
+            'drinks': [updated_drink.long()]
         })
-    except Exception as e:
-        print(e)
-        abort(404)
+    else:
+        abort(422)
 
 
 '''
@@ -135,22 +135,20 @@ def patch_drinks(payload, drink_id):
         or appropriate status code indicating reason for failure
 '''
 
-@app.route("/drinks/<id>", methods=["DELETE"])
-def delete_drink(drink_id):
-    if not drink_id:
-        abort(404)
+@app.route("/drinks/<drink_id>", methods=['DELETE'])
+@requires_auth("delete:drinks")
+def delete_drink(payload, drink_id):
     try:
-        drink = Drink.query.filter(Drink.id == id).one_or_none()
-        drink.update()
+        drink = Drink.query.filter_by(id=drink_id).one_or_none()
+        if drink is None:
+            abort(404)
         drink.delete()
         return jsonify({
             'success': True,
-            'deleted': drink_id
-        }), 200
-
-    except Exception as e:
-        print(e)
-        abort(404)
+            'drink': [drink.id]
+        })
+    except:
+        abort(422)
 
 
 ## Error Handling
